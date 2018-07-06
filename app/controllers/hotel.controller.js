@@ -1,4 +1,5 @@
 const Hotel = require("../models/hotel.model.js");
+const Food = require("../models/food.model.js");
 
 exports.post = (req,res) => {
     if(req.body.uid && req.body.name && req.body.email && req.body.phone && req.body.latitude && req.body.longitude) {
@@ -23,12 +24,19 @@ exports.get = (req,res) => {
 };
 
 exports.put = (req,res) => {
-    Hotel.findOneAndUpdate({ uid: req.params.uid }, { $set: req.body }, { new: true }, (err,data)=>sendData(err,data,req,res));
-    //TODO: Query Food Models and update the corresponding hotels
+    if(req.body) { 
+        Hotel.findOneAndUpdate({ uid: req.params.uid }, { $set: req.body }, { new: true }, (err,data)=>{
+            if(data && !err) Food.update({ "hotel.uid": req.params.uid }, { $set: { hotel: data } }, { new: true }, ()=>sendData(err,data,req,res));
+            else sendData("Hotel with provided UID does not exist", null, req, res);
+        });
+    } else sendData("Missing PUT body params.", null, req, res);
 };
 
 exports.delete = (req,res) => {
-    Hotel.findOneAndRemove({ uid: req.params.uid }, (err,data)=>sendData(err,data,req,res));
+    Hotel.findOneAndRemove({ uid: req.params.uid }, (err,data)=>{
+        if(data && !err) Food.deleteMany({ "hotel.uid": req.params.uid }, ()=>sendData(err,data,req,res));
+        else sendData("Hotel with provided UID does not exist", null, req, res);
+    });
 };
 
 function sendData(err, data, req, res) {

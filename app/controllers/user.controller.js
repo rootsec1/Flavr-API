@@ -13,7 +13,11 @@ exports.post = (req,res)=>{
 };
 
 exports.get = (req,res)=>{
-    User.findOne({ uid: req.params.uid }, (err,data)=>sendData(err,data,req,res));
+    if(req.query.phone) User.findOne({ phone: req.query.phone }, (err,data)=>{
+        if(data && data!=null && !err) sendData(err, { exists: true }, req, res);
+        else sendData(err, { exists: false }, req, res);
+    });
+    else User.findOne({ uid: req.params.uid }, (err,data)=>sendData(err,data,req,res));
 };
 
 exports.put = (req,res)=>{
