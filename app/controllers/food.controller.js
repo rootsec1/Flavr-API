@@ -1,15 +1,20 @@
 const Food = require("../models/food.model.js");
+const Hotel = require("../models/hotel.model.js");
 
 exports.post = (req,res)=>{
     if(req.body.name && req.body.cost && req.body.category && req.body.hotel) {
-        const food = new Food({
-            name: req.body.name,
-            cost: req.body.cost,
-            category: req.body.category,
-            hotel: req.body.hotel,
-            image: req.body.image? req.body.image : ""
+        Hotel.findById(req.body.hotel, (err,data)=>{
+            if(data && !err) {
+                const food = new Food({
+                    name: req.body.name,
+                    cost: req.body.cost,
+                    category: req.body.category,
+                    hotel: data,
+                    image: req.body.image? req.body.image : ""
+                });
+                food.save((err,data)=>sendData(err,data,req,res));
+            } else sendData("Hotel with provided ID does not exist.", null, req, res);
         });
-        food.save((err,data)=>sendData(err,data,req,res));
     } else sendData("Missing POST body params", null, req, res);
 };
 
