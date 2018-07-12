@@ -13,7 +13,7 @@ exports.post = (req,res) => {
                     latitude: req.body.latitude,
                     longitude: req.body.longitude
                 });
-                hotel.save((err,data)=>sendData(err,data));
+                hotel.save((err,data)=>sendData(err,data,req,res));
             } else sendData("Hospital UID already exists", null, req, res);
         }).limit(1);
     } else sendData("Missing POST body params", null, req, res);

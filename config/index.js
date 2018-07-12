@@ -1,5 +1,5 @@
 module.exports = {
     pathExt: "/api/v1",
     port: process.env.PORT || 8000,
-    dbUrl: "mongodb://localhost:27017/flavr-api"
+    dbUrl: "mongodb+srv://abhishekwl:abcd1234@flavr-cluster-main-430dm.mongodb.net/test?retryWrites=true"
 };
