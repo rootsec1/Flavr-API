@@ -19,8 +19,8 @@ exports.post = (req,res)=>{
 };
 
 exports.get = (req,res)=>{
-    if(req.params.id) Food.findById(req.params.id, (err,data)=>sendData(err,data,req,res));
-    else if(req.query.uid) Food.find({ uid: hotel.uid }, (err,data)=>sendData(err,data,req,res));
+    if(req.query.uid) Food.find({ "hotel.uid": req.query.uid }, (err,data)=>sendData(err,data,req,res));
+    else if(req.params.id) Food.findById(req.params.id, (err,data)=>sendData(err,data,req,res));
     else sendData("Missing Param ID or Query Param UID", null, req, res);
 };
 
