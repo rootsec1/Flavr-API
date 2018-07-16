@@ -1,6 +1,9 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
+const admin = require("firebase-admin");
+//LOCAL
+const serviceAccount = require("./config/admin-config-firebase.json");
 const config = require("./config");
 
 mongoose.Promise = global.Promise;
@@ -19,7 +22,13 @@ require("./app/routes/food.routes.js")(app);
 app.listen(config.port, ()=>{
     console.log("[SERVER] Listening on port "+config.port);
     mongoose.connect(config.dbUrl)
-    .then(() => console.log("[DB] Hooked to DB Success"))
+    .then(() => {
+        console.log("[DB] Hooked to DB Success");    
+        admin.initializeApp({
+            credential: admin.credential.cert(serviceAccount),
+            databaseURL: "https://flavr-console.firebaseio.com"
+        });
+    })
     .catch(err => {
         console.log("[!DB] Could not connect to database. Exiting..");
         process.exit();

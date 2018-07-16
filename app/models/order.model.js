@@ -7,7 +7,7 @@ const orderSchema = mongoose.Schema(
         latitude: { type: Number, required: true },
         longitude: { type: Number, required: true },
         user: { type: User.schema, required: true },
-        food: { type: Food.schema, required: true }
+        foodList: { type: [Food.schema], required: true }
     },
     {
         timestamps: true
