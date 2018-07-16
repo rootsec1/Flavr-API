@@ -6,18 +6,15 @@ exports.post = (req,res)=>{
             uid: req.body.uid,
             name: req.body.name,
             email: req.body.email,
-            phone: req.body.phone
+            phone: req.body.phone,
+            image: req.body.image? req.body.image: ""
         });
         user.save((err,data)=>sendData(err,data,req,res));
     } else sendData("Missing POST body params", null, req, res);
 };
 
 exports.get = (req,res)=>{
-    if(req.query.phone) User.findOne({ phone: req.query.phone }, (err,data)=>{
-        if(data && data!=null && !err) sendData(err, { exists: true }, req, res);
-        else sendData(err, { exists: false }, req, res);
-    });
-    else User.findOne({ uid: req.params.uid }, (err,data)=>sendData(err,data,req,res));
+    User.findOne({ uid: req.params.uid }, (err,data)=>sendData(err,data,req,res));
 };
 
 exports.put = (req,res)=>{

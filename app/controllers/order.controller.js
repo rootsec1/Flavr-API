@@ -7,7 +7,7 @@ exports.post = (req,res)=>{
         User.findById(req.body.user, (errUser,dataUser)=>{
             if(dataUser && !errUser) {
                 const order = new Order({
-                    uid: req.body.uid,
+                    uid: req.body.uid,  //Hotel UID
                     latitude: req.body.latitude,
                     longitude: req.body.longitude,
                     user: dataUser,
@@ -22,7 +22,7 @@ exports.post = (req,res)=>{
                         });
                     });
                 });
-            }
+            } else sendData("Invalid client", null, req, res);
         });
     }
 };
@@ -40,14 +40,16 @@ exports.get = (req,res)=>{
 };
 
 exports.delete = (req,res)=>{
-    Order.findById(req.params.id, (err,data)=>{
-        const databaseCountReference = firebase.database().ref("hotels/"+data.uid+"/count");
-        databaseCountReference.once("value", (snapshot)=>{
-            const currentCount = snapshot.val();
-            databaseCountReference.set(currentCount-1, ()=>{
-                sendData(err,data,req,res);
+    Order.findByIdAndRemove(req.params.id, (err,data)=>{
+        if (data) { 
+            const databaseCountReference = firebase.database().ref("hotels/"+data.uid+"/count");
+            databaseCountReference.once("value", (snapshot)=>{
+                const currentCount = snapshot.val();
+                databaseCountReference.set((currentCount<=0?0:currentCount-1), ()=>{
+                    sendData(err,data,req,res);
+                });
             });
-        });
+        } else sendData("Invalid ID", null, req, res);
     });
 };
 
@@ -55,6 +57,6 @@ function sendData(err, data, req, res) {
     console.log("["+req.method+"] "+req.url);
     if(err) {
         res.status(500).json({ err });
-        console.log("[!USER_CONTROLLER] "+err);
+        console.log("[!ORDER_CONTROLLER] "+err);
     } else res.status(200).json(data);
 }

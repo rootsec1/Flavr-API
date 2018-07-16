@@ -18,7 +18,7 @@ app.get("/", (req,res)=>{
 require("./app/routes/user.routes.js")(app);
 require("./app/routes/hotel.routes.js")(app);
 require("./app/routes/food.routes.js")(app);
-//require("./app/routes/order.routes.js")(app);
+require("./app/routes/order.routes.js")(app);
 app.listen(config.port, ()=>{
     console.log("[SERVER] Listening on port "+config.port);
     mongoose.connect(config.dbUrl)
