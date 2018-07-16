@@ -4,6 +4,7 @@ const Food = require("./food.model.js");
 
 const orderSchema = mongoose.Schema(
     {
+        uid: { type: String, required: true },
         latitude: { type: Number, required: true },
         longitude: { type: Number, required: true },
         user: { type: User.schema, required: true },

@@ -7,17 +7,48 @@ exports.post = (req,res)=>{
         User.findById(req.body.user, (errUser,dataUser)=>{
             if(dataUser && !errUser) {
                 const order = new Order({
+                    uid: req.body.uid,
                     latitude: req.body.latitude,
                     longitude: req.body.longitude,
                     user: dataUser,
                     foodList: req.body.foodList
                 });
                 order.save((err,data)=>{
-                    
+                    const databaseCountReference = firebase.database().ref("hotels/"+req.body.uid+"/count");
+                    databaseCountReference.once("value", (snapshot)=>{
+                        const currentCount = snapshot.val();
+                        databaseCountReference.set(currentCount+1, ()=>{
+                            sendData(err,data,req,res);
+                        });
+                    });
                 });
             }
         });
     }
+};
+
+exports.get = (req,res)=>{
+    if(req.query.uid) {
+        Order.find({ uid: req.query.uid }, (err,data)=>{
+            sendData(err,data,req,res);
+        });
+    } else if(req.params.id) {
+        Order.findById(req.params.id, (err,data)=>{
+            sendData(err,data,req,res);
+        });
+    }
+};
+
+exports.delete = (req,res)=>{
+    Order.findById(req.params.id, (err,data)=>{
+        const databaseCountReference = firebase.database().ref("hotels/"+data.uid+"/count");
+        databaseCountReference.once("value", (snapshot)=>{
+            const currentCount = snapshot.val();
+            databaseCountReference.set(currentCount-1, ()=>{
+                sendData(err,data,req,res);
+            });
+        });
+    });
 };
 
 function sendData(err, data, req, res) {
